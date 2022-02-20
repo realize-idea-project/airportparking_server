@@ -1,0 +1,58 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+header {
+  color: rebeccapurple;
+  font-size: 2em;
+  margin: 0.5em 0;
+}
+
+form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+form > input {
+  margin-bottom: 3rem;
+}
+
+.container {
+
+}
+
+.instruction {
+  border: 0.1em solid gray;
+  border-radius: 1em;
+  padding: 0 1em;
+}
+
+.instruction > div {
+  font-size: 1.2em;
+  margin: 1em 0;
+}
+
+.formContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2em;
+}
+
+#button__submit {
+  width: 12em;
+  height: 3em;
+
+  outline: none;
+  border: 1px solid black;
+  border-radius: 1em;
+}
+
+#form__url__secret, #form__input__key__secret {
+  display: none;
+}

@@ -1,0 +1,53 @@
+{
+  "name": "airportParking",
+  "version": "1.0.0",
+  "description": "It is a App for the people handling reservation and schedule of valet parking",
+  "main": "./src/app.ts",
+  "author": "han",
+  "license": "MIT",
+  "scripts": {
+    "start": "cross-env NODE_ENV=production node dist/src/app.js",
+    "build": "cross-env NODE_ENV=production tsc -p .",
+    "dev": "cross-env NODE_ENV=development nodemon ./src/app.ts",
+    "prod": "cross-env NODE_ENV=production nodemon ./src/app.ts"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.2",
+    "iconv-lite": "^0.6.3",
+    "jschardet": "^3.0.0",
+    "json2csv": "^5.0.6",
+    "lodash": "^4.17.21",
+    "multer": "^1.4.4",
+    "mysql2": "^2.3.3",
+    "sequelize": "^6.16.2",
+    "sequelize-cli": "^6.4.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/dotenv": "^8.2.0",
+    "@types/ejs": "^3.1.0",
+    "@types/express": "^4.17.13",
+    "@types/json2csv": "^5.0.3",
+    "@types/lodash": "^4.14.168",
+    "@types/multer": "^1.4.7",
+    "@types/node": "^17.0.17",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.24.0",
+    "eslint-config-prettier": "^8.2.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "faker": "^5.5.3",
+    "jest": "^26.6.3",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.2.1",
+    "ts-node": "^10.5.0",
+    "typescript": "^4.5.5",
+    "webpack": "^5.37.0",
+    "webpack-cli": "^4.7.0",
+    "webpack-node-externals": "^3.0.0",
+    "ts-loader": "^9.1.2"
+  }
+}
