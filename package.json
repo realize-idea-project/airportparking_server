@@ -6,8 +6,8 @@
   "author": "han",
   "license": "MIT",
   "scripts": {
-    "start": "sudo cp ./.env.production ./dist && cross-env NODE_ENV=production node dist/src/app.js",
-    "build": "sudo rm -rf ./dist && cross-env NODE_ENV=production tsc -p .",
+    "start": "cross-env NODE_ENV=production node dist/src/app.js",
+    "build": "cross-env NODE_ENV=production tsc -p . && sudo cp ./.env.production ./dist && sudo mkdir ./dist/src/views && sudo cp ./src/views/* ./dist/src/views",
     "dev": "cross-env NODE_ENV=development nodemon ./src/app.ts",
     "prod": "cross-env NODE_ENV=production nodemon ./src/app.ts"
   },
