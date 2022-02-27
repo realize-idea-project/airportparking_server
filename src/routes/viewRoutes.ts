@@ -16,7 +16,6 @@ viewRouter.get(DAILYCHART, (req: Request, res: Response, next: NextFunction) => 
     uploadKey: FILE_UPLOAD_KEY,
   };
   
-  console.log('dailychart', params);
     res.render('index', params);
   }
 );
