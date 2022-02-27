@@ -26,6 +26,8 @@ form.addEventListener('submit', async (event) => {
   const formData = getFilesAppendedFormData(files, uploadKey.textContent);
   const csvFile = await sendFormData(formData, uploadDate);
   
+  if (!csvFile) return;
+
   downloader
     .appendDownloadResource(csvFile)
     .download()
@@ -47,13 +49,23 @@ const getFilesAppendedFormData = (files, formDataKey) => {
 const sendFormData = async (body, date) => {
   const url = uploadUrl.textContent;
   const query = `?date=${date}`;
+  const apiUrl = `${url}${query}`;
   const method = 'POST';
 
-  const final = `${url}${query}`;
-  console.log('final', final)
-  
-  const res = await fetch(final, { method, body });
+  if (apiUrl.includes('undefined')) {
+    console.log(`api url: ${apiUrl}`);
+    alert('잘못된 api 요청 주소 입니다. 개발자에게 문의 바랍니다.');
+    return;
+  }
+
+  const res = await fetch(apiUrl, { method, body });
   const blob = await res.blob();
+
+  if (blob.type.includes('json')) {
+    alert('파일 생성에 실패하였습니다.');
+    return;
+  }
+  
   return blob;
 };
 class DownloadAnchorTag {
