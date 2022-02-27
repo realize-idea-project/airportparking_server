@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 
 console.log('js file connected');
-console.log('js file connected2');
 
 const uploadUrl = document.querySelector('#form__url__secret');
 const uploadKey = document.querySelector('#form__input__key__secret');
@@ -24,11 +23,8 @@ form.addEventListener('submit', async (event) => {
     return;
   }
 
-  console.log('1')
   const formData = getFilesAppendedFormData(files, uploadKey.textContent);
-  console.log('2')
   const csvFile = await sendFormData(formData, uploadDate);
-  console.log('3')
   
   if (!csvFile) return;
 
@@ -51,20 +47,17 @@ const getFilesAppendedFormData = (files, formDataKey) => {
 };
 
 const sendFormData = async (body, date) => {
-  console.log('2-1')
   const url = uploadUrl.textContent;
   const query = `?date=${date}`;
   const apiUrl = `${url}${query}`;
   const method = 'POST';
 
-  console.log('2-2', url);
   if (apiUrl.includes('undefined')) {
     console.log(`api url: ${apiUrl}`);
     alert('잘못된 api 요청 주소 입니다. 개발자에게 문의 바랍니다.');
     return;
   }
 
-  console.log('2-3', body);
   const res = await fetch(apiUrl, { method, body });
   const blob = await res.blob();
 
