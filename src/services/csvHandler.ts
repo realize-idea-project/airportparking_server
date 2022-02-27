@@ -20,35 +20,55 @@ const serviceEndDateDigits = 2; // 출고일은 2자리
 const serviceTimeIndex = 2;
 
 const parser = (files: Express.Request['files'], listDate: string) => {
-  if (_.isNil(files) || _.isEmpty(files)) return [];
-
-  if (Array.isArray(files)) {
-    const encodedBuffer = encodeToUft8(files);
-    const JsonContentFromCsv = formatCsvBufferIntoArray(encodedBuffer)
-      .sort(sortByServiceTime)
-      .map(mapNewIndex)
-      .map(convertCsvToObject(listDate));
+  try {
+    if (_.isNil(files) || _.isEmpty(files)) return [];
+  
+    if (Array.isArray(files)) {
+      const encodedBuffer = encodeToUft8(files);
+      const JsonContentFromCsv = formatCsvBufferIntoArray(encodedBuffer)
+        .sort(sortByServiceTime)
+        .map(mapNewIndex)
+        .map(convertCsvToObject(listDate));
+      
+      return JsonContentFromCsv;
+    }
+    return [];
     
-    return JsonContentFromCsv;
+  } catch (err: unknown) {
+    console.error('An error occur in parser function in csvHandler.ts', err);
+    if (process.env.NODE_ENV === 'development') throw err;
+    return [];
   }
 
-  return [];
 };
 
 const encodeToUft8 = (csvFiles: Express.Multer.File[]) => {
-  if (_.isEmpty(csvFiles) || _.isNil(csvFiles)) return [];
-  return csvFiles.map(filterBuffers).map(getUft8EncodedBuffer);
+  try {
+
+    if (_.isEmpty(csvFiles) || _.isNil(csvFiles)) return [];
+    return csvFiles.map(filterBuffers).map(getUft8EncodedBuffer);
+  } catch (err: unknown) {
+    console.error('An error occur in encodeToUft8 function in csvHandler.ts', err);
+    if (process.env.NODE_ENV === 'development') throw err;
+    return [];
+  }
 };
 
 const formatCsvBufferIntoArray = (encodedBuffer: string[]) => {
-  if (_.isEmpty(encodedBuffer) || _.isNil(encodedBuffer)) return [];
+  try {
+    if (_.isEmpty(encodedBuffer) || _.isNil(encodedBuffer)) return [];
+    
+    const result =  _.flatMap(encodedBuffer, splitByNewLine)
+      .filter(deleteEmptyRows)
+      .filter(deleteMeaninglessRows)
+      .map(splitByColumns);
   
-  const result =  _.flatMap(encodedBuffer, splitByNewLine)
-    .filter(deleteEmptyRows)
-    .filter(deleteMeaninglessRows)
-    .map(splitByColumns);
-
-  return result;
+    return result;
+  } catch (err: unknown) {
+    console.error('An error occur in formatCsvBufferIntoArray function in csvHandler.ts', err);
+    if (process.env.NODE_ENV === 'development') throw err;
+    return [];
+  }
 };
 
 const filterBuffers = (file: Express.Multer.File) => file.buffer;
@@ -59,24 +79,36 @@ const deleteMeaninglessRows = (string: string) => !_.isNaN(Number(string[0]));
 const trimValues = (string: string) => _.trim(string);
 
 const splitByColumns = (string: string) => {
-  const splittedData = string.split(',').map(trimValues);
-
-  const staticColumnData = splittedData.slice(0, STATIC_DATA_COLUMN_INDEX + 1);
-  const changableColumnData = parseChangableData(splittedData.slice(STATIC_DATA_COLUMN_INDEX + 1));
+  try {
+    const splittedData = string.split(',').map(trimValues);
   
-  return [ ...staticColumnData, ...changableColumnData ];
+    const staticColumnData = splittedData.slice(0, STATIC_DATA_COLUMN_INDEX + 1);
+    const changableColumnData = parseChangableData(splittedData.slice(STATIC_DATA_COLUMN_INDEX + 1));
+    
+    return [ ...staticColumnData, ...changableColumnData ];
+  } catch (err: unknown) {
+    console.error('An error occur in splitByColumns function in csvHandler.ts', err);
+    if (process.env.NODE_ENV === 'development') throw err;
+    return [];
+  } 
 };
 
 const parseChangableData = (dynamicData: string[]) => {
-  const serviceEndDateIndex = dynamicData.findIndex(isServiceEndDate);
-  const hasServiceEndDate = serviceEndDateIndex !== -1;
-
-  if (!hasServiceEndDate) return parseNoServiceEndDateColumnData(dynamicData);
-
-  return parseHasServiceEndDateColumnData(dynamicData, serviceEndDateIndex)
+  try {
+    const serviceEndDateIndex = dynamicData.findIndex(isServiceEndDate);
+    const hasServiceEndDate = serviceEndDateIndex !== -1;
+  
+    if (!hasServiceEndDate) return parseNoServiceEndDateColumnData(dynamicData);
+  
+    return parseHasServiceEndDateColumnData(dynamicData, serviceEndDateIndex);
+  } catch (err: unknown) {
+    console.error('An error occur in parseChangableData function in csvHandler.ts', err);
+    if (process.env.NODE_ENV === 'development') throw err;
+    return [];
+  } 
 };
 
-const isServiceEndDate = (data: string) => data.length === serviceEndDateDigits && !_.isNaN(Number(data))
+const isServiceEndDate = (data: string) => data.length === serviceEndDateDigits && !_.isNaN(Number(data));
 
 const parseNoServiceEndDateColumnData = (dynamicData: string[]) => {
   const noteColumnData = dynamicData.join(',');
@@ -117,10 +149,16 @@ const convertCsvToObject = (listDate: string) => (row: string[]): ParsedCsv => {
 };
 
 const csvGenerator = (paredCsvs: ParsedCsv[]) => {
-  const csvData = paredCsvs.map(changeFieldName);
-  const csv = parse(csvData, { withBOM: true });
-  
-  return csv;
+  try {
+    const csvData = paredCsvs.map(changeFieldName);
+    const csv = parse(csvData, { withBOM: true });
+    
+    return csv;
+  } catch (err: unknown) {
+    console.error('An error occur in parseChangableData function in csvHandler.ts', err);
+    if (process.env.NODE_ENV === 'development') throw err;
+    return [];
+  } 
 };
 
 const changeFieldName = (parsedCsv: ParsedCsv) => {
