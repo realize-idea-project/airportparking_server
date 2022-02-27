@@ -7,9 +7,9 @@
   "license": "MIT",
   "scripts": {
     "start": "cross-env NODE_ENV=production node dist/src/app.js",
-    "build": "cross-env NODE_ENV=production tsc -p .",
-    "start:dev": "cross-env NODE_ENV=development node ./dev/dist/src/app.js",
-    "build:dev": "cross-env NODE_ENV=development tsc -p ./dev",
+    "build": "rm -rf ./dist && cross-env NODE_ENV=production tsc -p .",
+    "start:dev": "cross-env NODE_ENV=development node dist/src/app.js",
+    "build:dev": "rm -rf ./dist && cross-env NODE_ENV=development tsc -p .",
     "dev": "cross-env NODE_ENV=development nodemon ./src/app.ts",
     "prod": "cross-env NODE_ENV=production nodemon ./src/app.ts"
   },
