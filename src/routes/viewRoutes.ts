@@ -17,7 +17,7 @@ viewRouter.get(DAILYCHART, (req: Request, res: Response, next: NextFunction) => 
   };
   
   console.log('dailychart', params);
-    res.status(SUCCESS.status).render('index', params);
+    res.render('index', params);
   }
 );
 
