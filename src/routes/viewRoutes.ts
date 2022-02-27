@@ -11,12 +11,12 @@ viewRouter.get(ENTRY, (req: Request, res: Response, next: NextFunction) => {
 );
 
 viewRouter.get(DAILYCHART, (req: Request, res: Response, next: NextFunction) => {
-    const params = {
-      url: `${process.env.HOST_URL}${API}${DAILYCHART}`,
-      uploadKey: FILE_UPLOAD_KEY,
-    };
-
-    res.status(SUCCESS.status).render('index', params);
+  const params = {
+    url: `${process.env.HOST_URL}${API}${DAILYCHART}`,
+    uploadKey: FILE_UPLOAD_KEY,
+  };
+  
+    res.render('index', params);
   }
 );
 
