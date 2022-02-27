@@ -12,9 +12,10 @@ db.meta.sync().then(() => {
     });
   } catch (e) {
     console.error('server Fail', e);
+    throw e;
   }
   
 }).catch((e) => {
-  console.log('db fail')
-  console.log(e);
+  console.log('db fail', e)
+  throw e;
 }) 

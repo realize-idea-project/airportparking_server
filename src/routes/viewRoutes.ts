@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { ENTRY, DAILYCHART, FILE_UPLOAD_KEY } from '../constants';
+import { ENTRY, DAILYCHART, FILE_UPLOAD_KEY, SUCCESS, API } from '../constants';
 
 const viewRouter = express.Router();
 
@@ -11,14 +11,12 @@ viewRouter.get(ENTRY, (req: Request, res: Response, next: NextFunction) => {
 );
 
 viewRouter.get(DAILYCHART, (req: Request, res: Response, next: NextFunction) => {
-    console.log('get sheet');
     const params = {
-      url: process.env.UPLOAD_API_PATH,
+      url: `${process.env.HOST_URL}${API}${DAILYCHART}`,
       uploadKey: FILE_UPLOAD_KEY,
     };
-    
-    res.render('index', params);
-    return;
+
+    res.status(SUCCESS.status).render('index', params);
   }
 );
 

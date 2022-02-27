@@ -1,9 +1,9 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import path from 'path';
+import CustomError from '../services/errorHandler';
 import { viewRouter, apiRouter } from '../routes';
 import { ENTRY, API } from '../constants/routes';
-import CustomError from '../services/errorHandler';
 import { NOT_FOUND } from '../constants';
 
 const app = express();
@@ -27,7 +27,7 @@ try {
   app.use((err: CustomError, req: Request, res: Response, next: NextFunction) => {
 
     if (process.env.NODE_ENV === 'development') {
-      console.error('Catch error in app error handelr', err.message);
+      console.error('Catch error in app error handler', err.message);
     }
 
     res.status(err.status);
@@ -35,7 +35,7 @@ try {
   });
 } catch (e) {
   console.error('error occur during server.ts loading', e);
+  throw e;
 }
-
 
 export default app;
