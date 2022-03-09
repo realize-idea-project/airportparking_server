@@ -26,6 +26,7 @@ form.addEventListener('submit', async (event) => {
   const result = await sendFormData(formData, uploadDate);
 
   const message = result.response ? '업로드에 성공하였습니다.' : '업로드에 실패하였습니다.';
+  location.reload();
   alert(message);
 });
 
