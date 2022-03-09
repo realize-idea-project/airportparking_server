@@ -58,6 +58,7 @@ export const getDailyChartModel = (db: Sequelize): ModelStatic<Model<string, Dai
     listDate: { // 2020-02-20
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
     },
   })
 };
