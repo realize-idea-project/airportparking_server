@@ -8,7 +8,6 @@ const form = document.querySelector('#form__excel');
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const downloader = new DownloadAnchorTag();
 
   const files = getFilesFromEvent(event);
   const uploadDate = event.target.date.value;
@@ -24,14 +23,10 @@ form.addEventListener('submit', async (event) => {
   }
 
   const formData = getFilesAppendedFormData(files, uploadKey.textContent);
-  const csvFile = await sendFormData(formData, uploadDate);
-  
-  if (!csvFile) return;
+  const result = await sendFormData(formData, uploadDate);
 
-  downloader
-    .appendDownloadResource(csvFile)
-    .download()
-    .endProcess();
+  const message = result.response ? '업로드에 성공하였습니다.' : '업로드에 실패하였습니다.';
+  alert(message);
 });
 
 const getFilesFromEvent = (event) => {
@@ -59,37 +54,7 @@ const sendFormData = async (body, date) => {
   }
 
   const res = await fetch(apiUrl, { method, body });
-  const blob = await res.blob();
+  const result = await res.json();
 
-  if (blob.type.includes('json')) {
-    alert('파일 생성에 실패하였습니다.');
-    return;
-  }
-  
-  return blob;
+  return result;
 };
-class DownloadAnchorTag {
-  anchor;
-
-  constructor() {
-    this.anchor = document.createElement('a');
-    document.body.appendChild(this.anchor);
-  }
-
-  appendDownloadResource = (blob, filename) => {
-    this.anchor.href = window.URL.createObjectURL(blob);
-    this.anchor.download = filename || `${Date.now()}.csv`;
-    return this;
-  };
-
-  download = () => {
-    this.anchor.click();
-    this.anchor.remove();
-    return this;
-  };
-
-  endProcess = () => {
-    location.reload();
-    alert('파일 생성이 완료되었습니다.');
-  };
-}
