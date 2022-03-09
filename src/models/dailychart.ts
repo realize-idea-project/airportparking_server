@@ -1,6 +1,6 @@
 import { DataTypes, Model, ModelStatic, Sequelize } from "sequelize";
 
-// const DATA_COLUMNS = ['번호', '입출고', '시간', '차량모델', '차번호', '핸드폰', '요금', '이름', '비고', '출고일'];
+export const EXCEL_COLOUMNS = ['번호', '입출고', '시간', '차량모델', '차번호', '핸드폰', '요금', '이름', '비고', '출고일'];
 export interface DailyChartAttributes {
   // count: string;
   serviceType: string;
