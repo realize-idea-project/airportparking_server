@@ -52,6 +52,7 @@ const makeJson = (sheet: xlsx.WorkSheet): ParsedRow[] => {
 };
 
 const trimPropertiesToProtectData = (row: ParsedRow) => {
+  if (_.isNil(row)) return {};
   const trimmed = Object.entries(row).map(([key, value]) => [trimValues(key), trimValues(value)]);
   return Object.fromEntries(trimmed);
 };
@@ -65,15 +66,15 @@ const convertToDBFormat = (listDate: string) => (rows: string[]): DailyChartAttr
   const serviceCharge = chargeStringToNumber(rows[6]);
 
   return {
-    serviceType: rows[1],
-    serviceTime: rows[2],
-    carType: rows[3],
-    plateNumber: rows[4],
-    contactNumber: rows[5],
+    serviceType: rows[1] || '',
+    serviceTime: rows[2] || '',
+    carType: rows[3] || '',
+    plateNumber: rows[4] || '',
+    contactNumber: rows[5] || '',
     serviceCharge: !_.isNaN(serviceCharge) ? serviceCharge : 0,
-    customerName: rows[7],
-    note: rows[8],
-    serviceEndDate: rows[9],
+    customerName: rows[7] || '',
+    note: rows[8] || '',
+    serviceEndDate: rows[9] || '',
     listDate: listDate || '',
   };
 };
