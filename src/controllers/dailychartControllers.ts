@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import _ from 'lodash';
 import { SUCCESS } from '../constants';
 import { db } from '../loaders';
-import { csvHandler, failResponse, CustomError } from '../services';
+import { csvHandler, failResponse, CustomError, successResponse } from '../services';
 
 
 const Dailychart = db.models.dailychart;
@@ -10,28 +10,24 @@ const Dailychart = db.models.dailychart;
 const postDailychart = async (req: Request, res: Response) => {  
   
   const uploadDate = req.query.date as string;
-  const parsedCsv = csvHandler.parser(req.files, uploadDate);
+  const rowsForDB = csvHandler.parser(req.files, uploadDate);
 
-
-  if (_.isEmpty(parsedCsv)) {
-    console.log('fail to generate csv file');
-    res.status(SUCCESS.status).json(failResponse('fail to generate csv file'));
+  if (_.isEmpty(rowsForDB)) {
+    console.log('fail to parse excel file');
+    res.status(SUCCESS.status).json(failResponse('fail to parse excel file'));
     return;
   }
   
   try {
-    const insertResult = await Dailychart.bulkCreate(parsedCsv);
+    const insertResult = await Dailychart.bulkCreate(rowsForDB);
     
-    if (insertResult.length !== parsedCsv.length) {
+    if (insertResult.length !== rowsForDB.length) {
       throw new CustomError({ 
-        message: `asked to bulkInsert ${parsedCsv.length} rows, but inserted ${insertResult.length}`
+        message: `asked to bulkInsert ${rowsForDB.length} rows, but inserted ${insertResult.length}`
       });
     }
 
-    const csvForDownload = csvHandler.csvGenerator(parsedCsv);
-    res.setHeader('Content-disposition', 'attachment; filename=data.csv');
-    res.set('Content-Type', 'text/csv');
-    res.status(SUCCESS.status).send(csvForDownload);
+    res.status(SUCCESS.status).json(successResponse('success to upload'));
     return; 
   } catch (err: unknown) {
     console.log('bulkCreate err in postSheet controller', err);
