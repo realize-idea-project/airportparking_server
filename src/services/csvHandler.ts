@@ -8,9 +8,9 @@ const HEADER_ROW_INDEX = 3;
 const CHARGE_EXCEPTION = '티몬';
 
 const parser = (files: Express.Request['files'], listDate: string) => {
+  if (_.isNil(files) || _.isEmpty(files)) return [];
+  
   try {
-    
-    if (_.isNil(files) || _.isEmpty(files)) return [];
     if (Array.isArray(files)) {
       const parsedRows = getRowsFromExcelFile(files);
       const dbRows = parsedRows.map(convertToDBFormat(listDate));
@@ -65,15 +65,15 @@ const convertToDBFormat = (listDate: string) => (rows: string[]): DailyChartAttr
   const serviceCharge = chargeStringToNumber(rows[6]);
 
   return {
-    serviceType: rows[1] || '',
-    serviceTime: rows[2] || '',
-    carType: rows[3] || '',
-    plateNumber: rows[4] || '',
-    contactNumber: rows[5] || '',
+    serviceType: rows[1],
+    serviceTime: rows[2],
+    carType: rows[3],
+    plateNumber: rows[4],
+    contactNumber: rows[5],
     serviceCharge: !_.isNaN(serviceCharge) ? serviceCharge : 0,
-    customerName: rows[7] || '',
-    note: rows[8] || '',
-    serviceEndDate: rows[9] || '',
+    customerName: rows[7],
+    note: rows[8],
+    serviceEndDate: rows[9],
     listDate: listDate || '',
   };
 };
