@@ -1,36 +1,21 @@
 import _ from 'lodash';
-import iconvlite from 'iconv-lite';
-import jschardet from 'jschardet';
-import { parse } from 'json2csv';
-import { DailyChartAttributes } from '../models/dailychart';
+import xlsx from 'xlsx';
+import { DailyChartAttributes, EXCEL_COLOUMNS } from '../models/dailychart';
 
-type ParsedCsv = DailyChartAttributes & { count: string};
+type ParsedRow = Record<string, string>; 
 
-/**  
- * 2022.02.19 입/출고 파일 기준
- * IN_OUT_CSV_COLUMNS 배열의 '비고' 항목의 데이터가 동적으로 들어옵니다.
- * '이름' 항목을 기준으로 '번호' ~ '이름' 항목까지와 '비고' ~ '출고시간'을
- * 나누어서 다루고 있습니다.
- */ 
-
-const STATIC_DATA_COLUMNS = ['번호', '입출고', '시간', '차량모델', '차번호', '핸드폰', '요금', '이름'];
-const DYNAMIC_DATA_COLUMNS = ['비고', '출고일', '출고시간'];
-const STATIC_DATA_COLUMN_INDEX = STATIC_DATA_COLUMNS.length - 1;
-const serviceEndDateDigits = 2; // 출고일은 2자리
-const serviceTimeIndex = 2;
+const HEADER_ROW_INDEX = 3;
+const CHARGE_EXCEPTION = '티몬';
 
 const parser = (files: Express.Request['files'], listDate: string) => {
-  try {
-    if (_.isNil(files) || _.isEmpty(files)) return [];
+  if (_.isNil(files) || _.isEmpty(files)) return [];
   
+  try {
     if (Array.isArray(files)) {
-      const encodedBuffer = encodeToUft8(files);
-      const JsonContentFromCsv = formatCsvBufferIntoArray(encodedBuffer)
-        .sort(sortByServiceTime)
-        .map(mapNewIndex)
-        .map(convertCsvToObject(listDate));
-      
-      return JsonContentFromCsv;
+      const parsedRows = getRowsFromExcelFile(files);
+      const dbRows = parsedRows.map(convertToDBFormat(listDate));
+
+      return dbRows;
     }
     return [];
     
@@ -39,147 +24,73 @@ const parser = (files: Express.Request['files'], listDate: string) => {
     if (process.env.NODE_ENV === 'development') throw err;
     return [];
   }
-
 };
 
-const encodeToUft8 = (csvFiles: Express.Multer.File[]) => {
-  try {
-
-    if (_.isEmpty(csvFiles) || _.isNil(csvFiles)) return [];
-    return csvFiles.map(filterBuffers).map(getUft8EncodedBuffer);
-  } catch (err: unknown) {
-    console.error('An error occur in encodeToUft8 function in csvHandler.ts', err);
-    if (process.env.NODE_ENV === 'development') throw err;
-    return [];
-  }
-};
-
-const formatCsvBufferIntoArray = (encodedBuffer: string[]) => {
-  try {
-    if (_.isEmpty(encodedBuffer) || _.isNil(encodedBuffer)) return [];
-    
-    const result =  _.flatMap(encodedBuffer, splitByNewLine)
-      .filter(deleteEmptyRows)
-      .filter(deleteMeaninglessRows)
-      .map(splitByColumns);
+const getRowsFromExcelFile = (excelFiles: Express.Multer.File[]) => {
+  if (_.isEmpty(excelFiles) || _.isNil(excelFiles)) return [];
   
-    return result;
+  try {
+    const workSheet = excelFiles.map(getWorkSheet);
+    const rowsInJson = _.flatMap(workSheet, makeJson).map(trimPropertiesToProtectData);
+    const rowsInArray = rowsInJson.map(convertJsonToArray);
+  
+    return rowsInArray;
   } catch (err: unknown) {
-    console.error('An error occur in formatCsvBufferIntoArray function in csvHandler.ts', err);
+    console.error('An error occur in parseExcel function in csvHandler.ts', err);
     if (process.env.NODE_ENV === 'development') throw err;
     return [];
   }
 };
 
-const filterBuffers = (file: Express.Multer.File) => file.buffer;
-const getUft8EncodedBuffer = (fileBuffer: Buffer) => iconvlite.decode(fileBuffer, jschardet.detect(fileBuffer).encoding);
-const splitByNewLine = (string: string) => string.split('\n');
-const deleteEmptyRows = (string: string) => string !== '\r';
-const deleteMeaninglessRows = (string: string) => !_.isNaN(Number(string[0]));
+const getWorkSheet = (file: Express.Multer.File) => {
+  const workBook = xlsx.read(file.buffer);
+  return workBook.Sheets[workBook.SheetNames[0]];
+};
+
+const makeJson = (sheet: xlsx.WorkSheet): ParsedRow[] => {
+  return xlsx.utils.sheet_to_json(sheet, { raw: false, range: HEADER_ROW_INDEX });
+};
+
+const trimPropertiesToProtectData = (row: ParsedRow) => {
+  const trimmed = Object.entries(row).map(([key, value]) => [trimValues(key), trimValues(value)]);
+  return Object.fromEntries(trimmed);
+};
+
 const trimValues = (string: string) => _.trim(string);
 
-const splitByColumns = (string: string) => {
-  try {
-    const splittedData = string.split(',').map(trimValues);
-  
-    const staticColumnData = splittedData.slice(0, STATIC_DATA_COLUMN_INDEX + 1);
-    const changableColumnData = parseChangableData(splittedData.slice(STATIC_DATA_COLUMN_INDEX + 1));
-    
-    return [ ...staticColumnData, ...changableColumnData ];
-  } catch (err: unknown) {
-    console.error('An error occur in splitByColumns function in csvHandler.ts', err);
-    if (process.env.NODE_ENV === 'development') throw err;
-    return [];
-  } 
-};
+const convertJsonToArray = (row: ParsedRow) => EXCEL_COLOUMNS.map((key) => row[key] ?? '');
 
-const parseChangableData = (dynamicData: string[]) => {
-  try {
-    const serviceEndDateIndex = dynamicData.findIndex(isServiceEndDate);
-    const hasServiceEndDate = serviceEndDateIndex !== -1;
-  
-    if (!hasServiceEndDate) return parseNoServiceEndDateColumnData(dynamicData);
-  
-    return parseHasServiceEndDateColumnData(dynamicData, serviceEndDateIndex);
-  } catch (err: unknown) {
-    console.error('An error occur in parseChangableData function in csvHandler.ts', err);
-    if (process.env.NODE_ENV === 'development') throw err;
-    return [];
-  } 
-};
+const convertToDBFormat = (listDate: string) => (rows: string[]): DailyChartAttributes => {
 
-const isServiceEndDate = (data: string) => data.length === serviceEndDateDigits && !_.isNaN(Number(data));
-
-const parseNoServiceEndDateColumnData = (dynamicData: string[]) => {
-  const noteColumnData = dynamicData.join(',');
-  return [ noteColumnData ];
-};
-
-const parseHasServiceEndDateColumnData = (dynamicData: string[], serviceEndDateIndex: number) => {
-  const noteColumnData = dynamicData.slice(0, serviceEndDateIndex).join(',');
-  const serviceEndAt = dynamicData[serviceEndDateIndex];
-  const serviceEndTime = dynamicData[serviceEndDateIndex + 1];
-
-  return [noteColumnData, serviceEndAt, serviceEndTime];
-};
-
-const sortByServiceTime = (a: string[], b: string[]) => {
-  if (a[serviceTimeIndex] === b[serviceTimeIndex]) return 0;
-  return a[serviceTimeIndex] > b[serviceTimeIndex] ? 1 : -1;
-};
-
-const mapNewIndex = (row: string[], index: number) => [(index + 1).toString(), ...row.slice(1)];
-
-const convertCsvToObject = (listDate: string) => (row: string[]): ParsedCsv => {
+  const serviceCharge = chargeStringToNumber(rows[6]);
 
   return {
-    count: row[0],
-    serviceType: row[1],
-    serviceTime: row[2] || "00:00",
-    carType: row[3],
-    plateNumber: row[4],
-    contactNumber: row[5],
-    serviceCharge: row[6] || '0',
-    customerName: row[7],
-    note: row[8],
-    serviceEndDate: row[9] || '',
-    serviceEndAt: row[10] || '',
+    serviceType: rows[1],
+    serviceTime: rows[2],
+    carType: rows[3],
+    plateNumber: rows[4],
+    contactNumber: rows[5],
+    serviceCharge: !_.isNaN(serviceCharge) ? serviceCharge : 0,
+    customerName: rows[7],
+    note: rows[8],
+    serviceEndDate: rows[9],
     listDate: listDate || '',
   };
 };
 
-const csvGenerator = (paredCsvs: ParsedCsv[]) => {
-  try {
-    const csvData = paredCsvs.map(changeFieldName);
-    const csv = parse(csvData, { withBOM: true });
-    
-    return csv;
-  } catch (err: unknown) {
-    console.error('An error occur in parseChangableData function in csvHandler.ts', err);
-    if (process.env.NODE_ENV === 'development') throw err;
-    return [];
-  } 
-};
-
-const changeFieldName = (parsedCsv: ParsedCsv) => {
-  return {
-    [STATIC_DATA_COLUMNS[0]]: parsedCsv.count,
-    [STATIC_DATA_COLUMNS[1]]: parsedCsv.serviceType,
-    [STATIC_DATA_COLUMNS[2]]: parsedCsv.serviceTime,
-    [STATIC_DATA_COLUMNS[3]]: parsedCsv.carType,
-    [STATIC_DATA_COLUMNS[4]]: parsedCsv.plateNumber,
-    [STATIC_DATA_COLUMNS[5]]: parsedCsv.contactNumber,
-    [STATIC_DATA_COLUMNS[6]]: parsedCsv.serviceCharge,
-    [STATIC_DATA_COLUMNS[7]]: parsedCsv.customerName,
-    [DYNAMIC_DATA_COLUMNS[0]]: parsedCsv.note,
-    [DYNAMIC_DATA_COLUMNS[1]]: parsedCsv.serviceEndDate,
-    [DYNAMIC_DATA_COLUMNS[2]]: parsedCsv.serviceEndAt,
-  };
-};
+const chargeStringToNumber = (charge: string) => {
+  if (charge === CHARGE_EXCEPTION) {
+    return 0;
+  } else if (charge.includes(',')) {
+    const strings = charge.split(',');
+    return Number(`${strings[0]}${strings[1]}`);
+  } else {
+    return Number(charge);
+  }
+}
   
 const csvHandler = {
 	parser,
-  csvGenerator,
 };
 
 export default csvHandler;
