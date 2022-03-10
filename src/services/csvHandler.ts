@@ -4,7 +4,7 @@ import { DailyChartAttributes, EXCEL_COLOUMNS } from '../models/dailychart';
 
 type ParsedRow = Record<string, string>; 
 
-const HEADER_ROW_INDEX = 3;
+const HEADER_ROW_INDEX = 2;
 const CHARGE_EXCEPTION = '티몬';
 
 const parser = (files: Express.Request['files'], listDate: string) => {
