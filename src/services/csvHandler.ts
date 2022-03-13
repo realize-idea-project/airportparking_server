@@ -2,14 +2,14 @@ import _ from 'lodash';
 import xlsx from 'xlsx';
 import { DailyChartAttributes, EXCEL_COLOUMNS } from '../models/dailychart';
 
-type ParsedRow = Record<string, string>; 
+type ParsedRow = Record<string, string>;
 
 const HEADER_ROW_INDEX = 2;
 const CHARGE_EXCEPTION = '티몬';
 
 const parser = (files: Express.Request['files'], listDate: string) => {
   if (_.isNil(files) || _.isEmpty(files)) return [];
-  
+
   try {
     if (Array.isArray(files)) {
       const parsedRows = getRowsFromExcelFile(files);
@@ -18,7 +18,6 @@ const parser = (files: Express.Request['files'], listDate: string) => {
       return dbRows;
     }
     return [];
-    
   } catch (err: unknown) {
     console.error('An error occur in parser function in csvHandler.ts', err);
     if (process.env.NODE_ENV === 'development') throw err;
@@ -28,12 +27,12 @@ const parser = (files: Express.Request['files'], listDate: string) => {
 
 const getRowsFromExcelFile = (excelFiles: Express.Multer.File[]) => {
   if (_.isEmpty(excelFiles) || _.isNil(excelFiles)) return [];
-  
+
   try {
     const workSheet = excelFiles.map(getWorkSheet);
     const rowsInJson = _.flatMap(workSheet, makeJson).map(trimPropertiesToProtectData);
     const rowsInArray = rowsInJson.map(convertJsonToArray);
-  
+
     return rowsInArray;
   } catch (err: unknown) {
     console.error('An error occur in parseExcel function in csvHandler.ts', err);
@@ -61,23 +60,24 @@ const trimValues = (string: string) => _.trim(string);
 
 const convertJsonToArray = (row: ParsedRow) => EXCEL_COLOUMNS.map((key) => row[key] ?? '');
 
-const convertToDBFormat = (listDate: string) => (rows: string[]): DailyChartAttributes => {
+const convertToDBFormat =
+  (listDate: string) =>
+  (rows: string[]): DailyChartAttributes => {
+    const serviceCharge = chargeStringToNumber(rows[6]);
 
-  const serviceCharge = chargeStringToNumber(rows[6]);
-
-  return {
-    serviceType: rows[1] || '',
-    serviceTime: rows[2] || '',
-    carType: rows[3] || '',
-    plateNumber: rows[4] || '',
-    contactNumber: rows[5] || '',
-    serviceCharge: !_.isNaN(serviceCharge) ? serviceCharge : 0,
-    customerName: rows[7] || '',
-    note: rows[8] || '',
-    serviceEndDate: rows[9] || '',
-    listDate: listDate || '',
+    return {
+      serviceType: rows[1] || '',
+      serviceTime: rows[2] || '',
+      carType: rows[3] || '',
+      plateNumber: rows[4] || '',
+      contactNumber: rows[5] || '',
+      serviceCharge: !_.isNaN(serviceCharge) ? serviceCharge : 0,
+      customerName: rows[7] || '',
+      note: rows[8] || '',
+      serviceEndDate: rows[9] || '',
+      listDate: listDate || '',
+    };
   };
-};
 
 const chargeStringToNumber = (charge: string) => {
   if (charge === CHARGE_EXCEPTION) {
@@ -88,10 +88,10 @@ const chargeStringToNumber = (charge: string) => {
   } else {
     return Number(charge);
   }
-}
-  
+};
+
 const csvHandler = {
-	parser,
+  parser,
 };
 
 export default csvHandler;
