@@ -4,14 +4,11 @@ import { SUCCESS } from '../constants';
 import { db } from '../loaders';
 import { csvHandler, failResponse, CustomError, successResponse } from '../services';
 
-
 const Dailychart = db.models.dailychart;
 
 const getFindSyntax = (date: string): any => ({ where: { listDate: date } });
 
-
-const postDailychart = async (req: Request, res: Response) => {  
-  
+const postDailychart = async (req: Request, res: Response) => {
   const uploadDate = req.query.date as string;
   const hasAlreadyUploadedList = await checkHasAlreadyUploadedList(uploadDate);
 
@@ -38,26 +35,25 @@ const insertUploadedFile = async (files: Express.Request['files'], listDate: str
     console.log('fail to parse excel file');
     return { result: false, messgae: 'fail to parse excel file' };
   }
-  
+
   try {
     const insertResult = await Dailychart.bulkCreate(rowsForDB);
-    
+
     if (insertResult.length !== rowsForDB.length) {
-      throw new CustomError({ 
-        message: `asked to bulkInsert ${rowsForDB.length} rows, but inserted ${insertResult.length}`
+      throw new CustomError({
+        message: `asked to bulkInsert ${rowsForDB.length} rows, but inserted ${insertResult.length}`,
       });
     }
 
-    return { result: true, message: 'success to upload' }; 
+    return { result: true, message: 'success to upload' };
   } catch (err: any) {
     console.log('bulkCreate err in postSheet controller', err);
     return { result: false, message: err?.message };
   }
-}
+};
 
 const getDailychart = async (req: Request, res: Response) => {
   if (req.query.listDate) {
-    
     const targetByUploadDate = req.query.listDate as string;
 
     try {

@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
+  <head>
     <meta charset="utf-8" />
     <title>일일 주차 현황 업로드</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel='stylesheet' href="css/dailychart.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="css/dailychart.css" />
     <script type="module" src="js/dailychart.js" defer></script>
-</head>
-<body>
+  </head>
+  <body>
     <header>일일 주차 목록 생성기</header>
     <div class="container">
-        <div class="instruction">
-            <div>선택한 파일을 합쳐서 시간순으로 정리해주는 프로그램입니다.</div>
-            <div>- 작업하고 싶은 파일을 올려주세요.</div>
-            <div>- 파일은 최대 3개까지 가능합니다.</div>
-            <div>- 파일의 확장자는 .csv 이어야만 합니다. </div>
-            <div>  ex) 김포공항.csv</div>
-        </div>
-        <div class="formContainer">
-            <div id="form__url__secret"><%= url %></div>
-            <div id="form__input__key__secret"><%= uploadKey %></div>
-            <form id='form__excel'>
-                <input type=file name='excel0'/>
-                <!-- <input type=file name='excel1'/>
+      <div class="instruction">
+        <div>선택한 파일을 합쳐서 시간순으로 정리해주는 프로그램입니다.</div>
+        <div>- 작업하고 싶은 파일을 올려주세요.</div>
+        <div>- 파일은 최대 3개까지 가능합니다.</div>
+        <div>- 파일의 확장자는 .csv 이어야만 합니다.</div>
+        <div>ex) 김포공항.csv</div>
+      </div>
+      <div class="formContainer">
+        <div id="form__url__secret"><%= url %></div>
+        <div id="form__input__key__secret"><%= uploadKey %></div>
+        <form id="form__excel">
+          <input type="file" name="excel0" />
+          <!-- <input type=file name='excel1'/>
                 <input type=file name='excel2'/> -->
-                <input type=date name='date'/>
-                <button type="submit" id='button__submit'>파일생성</button>
-            </form>
-        </div>
+          <input type="date" name="date" />
+          <button type="submit" id="button__submit">파일생성</button>
+        </form>
+      </div>
     </div>
-</body>
+  </body>
 </html>
