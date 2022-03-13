@@ -1,4 +1,4 @@
-import { INTERNAL_SERVER_ERROR } from "../constants";
+import { INTERNAL_SERVER_ERROR } from '../constants';
 
 export interface CustomErrorInterface {
   message: string;
@@ -8,10 +8,10 @@ export interface CustomErrorInterface {
 class CustomError extends Error implements CustomErrorInterface {
   message: string;
 
-  status: number; 
-  
+  status: number;
+
   private internalServerErrorCode = INTERNAL_SERVER_ERROR.status;
-  
+
   constructor(error: CustomErrorInterface) {
     super();
     this.message = error.message;

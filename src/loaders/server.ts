@@ -14,8 +14,8 @@ try {
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
 
-  app.set( "views", path.join( __dirname, "../views" ) );
-  app.set( "view engine", "ejs" );
+  app.set('views', path.join(__dirname, '../views'));
+  app.set('view engine', 'ejs');
 
   app.use(API, apiRouter);
   app.use(ENTRY, viewRouter);
@@ -23,9 +23,7 @@ try {
     throw new CustomError(NOT_FOUND);
   });
 
-
   app.use((err: CustomError, req: Request, res: Response, next: NextFunction) => {
-
     if (process.env.NODE_ENV === 'development') {
       console.error('Catch error in app error handler', err.message);
     }
