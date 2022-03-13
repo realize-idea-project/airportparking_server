@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import path from 'path';
+import { createServer } from 'http';
 import CustomError from '../services/errorHandler';
 import { viewRouter, apiRouter } from '../routes';
 import { ENTRY, API } from '../constants/routes';
@@ -36,4 +37,4 @@ try {
   throw e;
 }
 
-export default app;
+export default createServer(app);

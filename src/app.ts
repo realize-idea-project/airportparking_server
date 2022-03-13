@@ -1,6 +1,14 @@
 import initializeEnv from './config/environmentalVariables';
 initializeEnv();
-import { app, db } from './loaders';
+import { app, db, connectSocketServer } from './loaders';
+
+connectSocketServer(app)
+  .then(() => {
+    console.log('socket connect success');
+  })
+  .catch((e) => {
+    console.log('socket connect fail', e);
+  });
 
 db.meta
   .sync()
