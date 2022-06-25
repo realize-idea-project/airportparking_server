@@ -8,12 +8,13 @@
 <https://developpaper.com/question/what-if-cross-env-doesnt-work/>
 
 
+
 3. ec2 인스턴스 생성
 > 인스턴스 골라서 생성
 > 신규 키 페어 생성 후 다운로드
 > cd ~ && mkdir ./.ssh && mv ~/Desktop/파일명.pem ./
 > chmod 400 파일명.pem
-> ssh -i "파일명.pem" ubuntu@퍼블릭 IPv4 DNS(인스턴스 상세에서 찾을 수 있다.)
+> ssh -i "파일명.pem" ubuntu@퍼블릭 IPv4 DNS(인스턴스 상세에서 찾을 수 있다.) ("secondtry.pem")
 > 보안 > 인바운드 규칙 수정 > HTTP, HTTPS, MYSQL, Custom(내가쓰는 포트)
 
 4. ubuntu 세팅
@@ -36,3 +37,5 @@
 > pm2 start ./dist/src/app.js 를 실행한다.
 > 터미널 종료 후에도 작동하는지 확인 
 
+6. mysql 실행
+> mysql.server start
