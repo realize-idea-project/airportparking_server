@@ -30,8 +30,10 @@
 > ec2 ubuntu에서 git clone을 받는다.
 > github 세팅 > 데브세팅 > token 발급
 > $ sudo git config --global credential.helper store
+> pm2 status > pm2 stop > mp2 delete
 > 프로젝트 폴더에서 $ sudo yarn install
 > local과 똑같은 .env.development 와 .env.production을 ubuntu 내 경로에 설치한다.
+> rm -rf ./dist로 빌드 파일을 지운다.
 > build script를 통해서 ts를 js로 변경한다.
 > ** 중요 ** dist 폴더 안에 .env.production을 만들어준다.
 > pm2 start ./dist/src/app.js 를 실행한다.
