@@ -80,9 +80,9 @@ const updateOneColumnInDailychart = async (req: Request, res: Response) => {
   const isSuccess = Boolean(updatedResult[0]);
 
   if (isSuccess) {
-    res.status(SUCCESS.status).end('success');
+    res.status(SUCCESS.status).json({ isSuccess: true });
   } else {
-    res.status(400).end('fail');
+    res.status(400).json({ isSuccess: false });
   }
 };
 
