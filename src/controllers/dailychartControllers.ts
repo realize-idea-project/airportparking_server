@@ -8,7 +8,7 @@ const Dailychart = db.models.dailychart;
 
 const getFindSyntax = (date: string): any => ({ where: { listDate: date } });
 
-const postDailychart = async (req: Request, res: Response) => {
+const createDailychart = async (req: Request, res: Response) => {
   const uploadDate = req.query.date as string;
   const hasAlreadyUploadedList = await checkHasAlreadyUploadedList(uploadDate);
 
@@ -70,9 +70,26 @@ const getDailychart = async (req: Request, res: Response) => {
   res.status(SUCCESS.status).json('There was no listDate');
 };
 
+const updateOneColumnInDailychart = async (req: Request, res: Response) => {
+  const { id, serviceTime } = req.body;
+
+  const updateValue = { serviceTime } as any;
+  const findCondition = { where: { id } } as any;
+  const updatedResult = await Dailychart.update(updateValue, findCondition);
+
+  const isSuccess = Boolean(updatedResult[0]);
+
+  if (isSuccess) {
+    res.status(SUCCESS.status).json({ isSuccess: true });
+  } else {
+    res.status(400).json({ isSuccess: false });
+  }
+};
+
 const dailychartControllers = {
-  postDailychart,
+  createDailychart,
   getDailychart,
+  updateOneColumnInDailychart,
 };
 
 export default dailychartControllers;
