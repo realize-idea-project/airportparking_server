@@ -70,9 +70,26 @@ const getDailychart = async (req: Request, res: Response) => {
   res.status(SUCCESS.status).json('There was no listDate');
 };
 
+const updateOneColumnInDailychart = async (req: Request, res: Response) => {
+  const { id, serviceTime } = req.body;
+
+  const updateValue = { serviceTime } as any;
+  const findCondition = { where: { id } } as any;
+  const updatedResult = await Dailychart.update(updateValue, findCondition);
+
+  const isSuccess = Boolean(updatedResult[0]);
+
+  if (isSuccess) {
+    res.status(SUCCESS.status).end('success');
+  } else {
+    res.status(400).end('fail');
+  }
+};
+
 const dailychartControllers = {
   createDailychart,
   getDailychart,
+  updateOneColumnInDailychart,
 };
 
 export default dailychartControllers;
