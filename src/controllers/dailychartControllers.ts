@@ -8,7 +8,7 @@ const Dailychart = db.models.dailychart;
 
 const getFindSyntax = (date: string): any => ({ where: { listDate: date } });
 
-const postDailychart = async (req: Request, res: Response) => {
+const createDailychart = async (req: Request, res: Response) => {
   const uploadDate = req.query.date as string;
   const hasAlreadyUploadedList = await checkHasAlreadyUploadedList(uploadDate);
 
@@ -71,7 +71,7 @@ const getDailychart = async (req: Request, res: Response) => {
 };
 
 const dailychartControllers = {
-  postDailychart,
+  createDailychart,
   getDailychart,
 };
 

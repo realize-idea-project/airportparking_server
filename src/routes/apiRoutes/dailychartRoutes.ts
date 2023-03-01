@@ -3,7 +3,7 @@ import { fileUploader } from '../../middlewares';
 import { dailychartControllers } from '../../controllers';
 import { ENTRY, FILE_UPLOAD_KEY } from '../../constants';
 
-const { postDailychart, getDailychart } = dailychartControllers;
+const { createDailychart: postDailychart, getDailychart } = dailychartControllers;
 
 const dailychartRoutes = express.Router();
 
