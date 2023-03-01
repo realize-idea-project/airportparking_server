@@ -1,3 +1,3 @@
 export const ENTRY = '/';
-export const API = '/api';
+export const API = '/apis';
 export const DAILYCHART = '/dailychart';
