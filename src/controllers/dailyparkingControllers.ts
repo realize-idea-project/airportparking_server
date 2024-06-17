@@ -1,8 +1,7 @@
-import express, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import _ from 'lodash';
-import { SUCCESS } from '../constants';
 import { db } from '../loaders';
-import { csvHandler, failResponse, CustomError, successResponse } from '../services';
+import { failResponse } from '../services';
 import { getFindSyntax } from '../utils/squelizeUtils';
 
 const Dailyparking = db.models.dailyparking;
@@ -58,9 +57,21 @@ const getParkingListByDate = async (req: Request, res: Response) => {
   });
 };
 
+const getParkingListByDateForView = async (req: Request, res: Response) => {
+  const targetByUploadDate = req.query.listDate as string;
+
+  if (!targetByUploadDate) return [];
+
+  const dailyParkings = await Dailyparking.findAll({ ...getFindSyntax(targetByUploadDate), raw: true });
+  const filteredList = _removeDup(dailyParkings);
+
+  return filteredList;
+};
+
 const dailyparkingControllers = {
   createDailyParking,
   getParkingListByDate,
+  getParkingListByDateForView,
 };
 
 export default dailyparkingControllers;
