@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>일일 주차 현황 업로드</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="css/parking.css" />
+    <script type="module" src="js/parking.js" defer></script>
+  </head>
+  <body>
+    <header>일일 차량 주차 위치 현황</header>
+    <div class="container">
+      <div class="instruction">
+        <div>직원분들께서 해주실 일</div>
+        <div>1.직원분들께서 차량을 주차장에 주차</div>
+        <div>2.주차한 주차장을 선택 (i/p, gmg, 발산)</div>
+        <div>3.노란색 주차완료 버튼 누르고 > Ok 누르기</div>
+        <div>4.'성공'이 보이면 주차완료</div>
+        <hr />
+        <div>관리자가 해주실 일</div>
+        <div>1. 날짜를 선택</div>
+        <div>2. 목록 가져오기</div>
+        <div>3. 해당 날짜에 주차된 차량 목록 표시</div>
+      </div>
+    </div>
+    <form method="GET" action="/dailyparking">
+      <label for="listDate">Select Date:</label>
+      <input type="date" id="listDate" name="listDate" required />
+      <button type="submit" id="listBtn">목록 가져오기</button>
+    </form>
+    <hr />
+    <table border="1">
+      <thead>
+        <tr>
+          <th>예약날짜</th>
+          <th>차종</th>
+          <th>차량번호</th>
+          <th>주차위치</th>
+          <th>출고일</th>
+          <th>입고시간</th>
+          <th>주차 완료 시간</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (parkings && parkings.length > 0) { %> <% parkings.forEach(parking => { %>
+        <tr>
+          <td><%= parking.listDate %></td>
+          <td><%= parking.carType %></td>
+          <td><%= parking.plateNumber %></td>
+          <td><%= parking.parkingLotCode %></td>
+          <td><%= parking.serviceEndDate %></td>
+          <td><%= parking.serviceTime %></td>
+          <td><%= parking.updatedAt %></td>
+        </tr>
+        <% }) %> <% } else { %>
+        <tr>
+          <td colspan="7">선택된 날짜에 데이터가 없습니다.</td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </body>
+</html>

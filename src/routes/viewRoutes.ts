@@ -1,5 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { ENTRY, DAILYCHART, FILE_UPLOAD_KEY, SUCCESS, API } from '../constants';
+import { ENTRY, DAILYCHART, FILE_UPLOAD_KEY, SUCCESS, API, DAILYPARKING } from '../constants';
+import { dailyparkingControllers } from '../controllers';
+import { formatToKrTime } from '../utils/timeUtils';
 
 const viewRouter = express.Router();
 
@@ -15,7 +17,17 @@ viewRouter.get(DAILYCHART, (req: Request, res: Response, next: NextFunction) => 
     uploadKey: FILE_UPLOAD_KEY,
   };
 
-  res.render('index', params);
+  res.render('dailychart', params);
+});
+
+viewRouter.get(DAILYPARKING, async (req: Request, res: Response, next: NextFunction) => {
+  const parkings = await dailyparkingControllers.getParkingListByDateForView(req, res);
+
+  parkings.forEach((parking: any) => {
+    parking.updatedAt = formatToKrTime(parking.updatedAt);
+  });
+
+  res.render('dailyparking', { parkings });
 });
 
 export default viewRouter;
