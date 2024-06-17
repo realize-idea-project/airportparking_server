@@ -1,0 +1,74 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+header {
+  color: rebeccapurple;
+  font-size: 2em;
+  margin: 0.5em 0;
+}
+
+form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+form > input {
+  margin-bottom: 3rem;
+}
+
+.instruction {
+  border: 0.1em solid gray;
+  border-radius: 1em;
+  padding: 0 1em;
+}
+
+.instruction > div {
+  font-size: 1.2em;
+  margin: 1em 0;
+}
+
+/* 테이블 스타일 */
+table {
+  width: 80%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 18px; /* 글자 크기 키우기 */
+}
+
+th,
+td {
+  padding: 12px; /* 셀 간격 넓히기 */
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* 폼 스타일 */
+form {
+  margin: 20px 0;
+}
+
+label {
+  font-size: 18px; /* 라벨 글자 크기 */
+}
+
+input[type='date'],
+button {
+  font-size: 16px; /* 입력 필드 및 버튼 글자 크기 */
+  padding: 10px; /* 입력 필드 및 버튼 패딩 */
+  margin-left: 10px;
+}

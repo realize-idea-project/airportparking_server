@@ -1,5 +1,5 @@
 import { Sequelize, Dialect } from 'sequelize';
-import { getDailyChartModel } from '../models';
+import { getDailyChartModel, getDailyParkingModal } from '../models';
 
 const database = process.env.DB_DATABASE || 'local';
 const username = process.env.DB_USERNAME || 'root';
@@ -10,10 +10,12 @@ const timezone = process.env.DB_TIMEZONE || '+09:00';
 
 const sequelize = new Sequelize(database, username, password, { host, dialect, timezone });
 const Dailychart = getDailyChartModel(sequelize);
+const DailyParking = getDailyParkingModal(sequelize);
 
 export default {
   meta: sequelize,
   models: {
     dailychart: Dailychart,
+    dailyparking: DailyParking,
   },
 };

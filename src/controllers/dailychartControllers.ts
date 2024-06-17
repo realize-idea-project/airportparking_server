@@ -3,10 +3,9 @@ import _ from 'lodash';
 import { SUCCESS } from '../constants';
 import { db } from '../loaders';
 import { csvHandler, failResponse, CustomError, successResponse } from '../services';
+import { getFindSyntax } from '../utils/squelizeUtils';
 
 const Dailychart = db.models.dailychart;
-
-const getFindSyntax = (date: string): any => ({ where: { listDate: date } });
 
 const createDailychart = async (req: Request, res: Response) => {
   const uploadDate = req.query.date as string;
@@ -29,6 +28,7 @@ const checkHasAlreadyUploadedList = async (listDate: string) => {
 };
 
 const insertUploadedFile = async (files: Express.Request['files'], listDate: string) => {
+  console.log('files', files);
   const rowsForDB = csvHandler.parser(files, listDate);
 
   if (_.isEmpty(rowsForDB)) {
