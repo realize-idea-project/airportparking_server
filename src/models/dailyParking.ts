@@ -6,6 +6,7 @@ export interface DailyParkingAttributes {
   serviceEndDate: string;
   listDate: string;
   serviceTime: string;
+  parkingLotCode: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -19,6 +20,11 @@ export const getDailyparkingModal = (db: Sequelize): ModelStatic<Model<string, D
     },
     plateNumber: {
       // 차번호: 'string' 02도 8805
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    parkingLotCode: {
+      // i/p, gmg, b
       type: DataTypes.STRING,
       allowNull: true,
     },
