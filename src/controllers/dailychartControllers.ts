@@ -29,6 +29,7 @@ const checkHasAlreadyUploadedList = async (listDate: string) => {
 };
 
 const insertUploadedFile = async (files: Express.Request['files'], listDate: string) => {
+  console.log('files', files);
   const rowsForDB = csvHandler.parser(files, listDate);
 
   if (_.isEmpty(rowsForDB)) {
