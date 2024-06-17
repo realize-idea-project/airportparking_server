@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { SUCCESS } from '../constants';
 import { db } from '../loaders';
 import { csvHandler, failResponse, CustomError, successResponse } from '../services';
+import { getFindSyntax } from '../utils/squelizeUtils';
 
 const Dailyparking = db.models.dailyparking;
 
@@ -32,8 +33,34 @@ const createDailyParking = async (req: Request, res: Response) => {
   }
 };
 
+const _removeDup = (list: any) => {
+  return list.reduce((acc: any, current: any) => {
+    const existing = acc.find((item: any) => item.plateNumber === current.plateNumber);
+    if (!existing) {
+      acc.push(current);
+    } else if (new Date(existing.updatedAt) < new Date(current.updatedAt)) {
+      const index = acc.indexOf(existing);
+      acc[index] = current;
+    }
+    return acc;
+  }, [] as any[]);
+};
+
+const getParkingListByDate = async (req: Request, res: Response) => {
+  const targetByUploadDate = req.query.listDate as string;
+
+  const dailyParkings = await Dailyparking.findAll({ ...getFindSyntax(targetByUploadDate), raw: true });
+  const filteredList = _removeDup(dailyParkings);
+
+  res.status(200).json({
+    isSuccess: true,
+    data: filteredList,
+  });
+};
+
 const dailyparkingControllers = {
   createDailyParking,
+  getParkingListByDate,
 };
 
 export default dailyparkingControllers;

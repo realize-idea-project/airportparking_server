@@ -18,4 +18,8 @@ viewRouter.get(DAILYCHART, (req: Request, res: Response, next: NextFunction) => 
   res.render('dailychart', params);
 });
 
+viewRouter.get(DAILYPARKING, (req: Request, res: Response, next: NextFunction) => {
+  res.render('dailyparking');
+});
+
 export default viewRouter;
