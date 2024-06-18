@@ -25,32 +25,32 @@
     </div>
     <form method="GET" action="/dailyparking">
       <label for="listDate">Select Date:</label>
-      <input type="date" id="listDate" name="listDate" required />
+      <input type="date" id="endDate" name="endDate" required />
       <button type="submit" id="listBtn">목록 가져오기</button>
     </form>
     <hr />
     <table border="1">
       <thead>
         <tr>
-          <th>예약날짜</th>
+          <th>출고일</th>
           <th>차종</th>
           <th>차량번호</th>
           <th>주차위치</th>
-          <th>출고일</th>
-          <th>입고시간</th>
           <th>주차 완료 시간</th>
+          <th>입고일</th>
+          <th>입고시간</th>
         </tr>
       </thead>
       <tbody>
         <% if (parkings && parkings.length > 0) { %> <% parkings.forEach(parking => { %>
         <tr>
-          <td><%= parking.listDate %></td>
+          <td><%= parking.serviceEndDate %></td>
           <td><%= parking.carType %></td>
           <td><%= parking.plateNumber %></td>
           <td><%= parking.parkingLotCode %></td>
-          <td><%= parking.serviceEndDate %></td>
           <td><%= parking.serviceTime %></td>
           <td><%= parking.updatedAt %></td>
+          <td><%= parking.listDate %></td>
         </tr>
         <% }) %> <% } else { %>
         <tr>
